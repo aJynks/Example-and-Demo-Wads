@@ -1,0 +1,118 @@
+/*****************************************************************************
+ * DECOHack Patch File
+ * Main
+ ****************************************************************************/
+
+#include <dsdhacked>
+#include <friendly>
+
+//Legacy of Rust Sate and Thing Protection
+set state free safety on
+state protect 1100 to 1566
+each thing from 151 to 209 {}
+
+// Your DECOHack code here ...
+//#include "strings.dh"
+
+thing Cacodemon {infightinggroup 1}
+
+auto thing CacodemonFog <- thing Cacodemon "Cacodemon"
+{
+	//$Category c_Line2LineFOG-Monsters
+	//$Colour 13
+	EdNum 6001
+	infightinggroup 1
+	states
+	{
+		see:
+			HEAD A 0
+			goto see_flagTest
+
+		see_flagTest:
+			HEAD B 0 A_JumpIfFlagsSet(see_Original, RIP, 0)
+			HEAD B 0 A_JumpIfTargetInSight(see_playerLOS, 0.0)
+			goto see_testingFlagLoop
+
+		see_playerLOS:
+			HEAD A 0 A_AddFlags(RIP, 0)
+			HEAD B 0 {A_SpawnObject(TeleportFog, 0.0, 18.0, 0.0, 0.0, 0.0, 0.0, 0.0)
+				      A_PlaySound("TELEPT", 1)
+				     }
+		     HEAD A 6
+			goto see_testingFlagLoop
+
+		see_testingFlagLoop:
+			HEAD A 3 A_Chase
+			goto see_flagTest
+			
+		see_Original:
+			HEAD A 3 A_Chase
+			loop
+
+		missile:
+			HEAD BC 5 A_FaceTarget
+			HEAD D 5 bright A_HeadAttack
+			goto see_Original
+		pain:
+			HEAD E 3
+			HEAD E 3 A_Pain
+			HEAD F 6
+			goto see_Original
+		raise:
+			HEAD LKJIHG 8
+			goto see_Original
+	}
+}
+
+thing HellKnight {infightinggroup 2}
+auto thing HellKnightFog <- thing HellKnight "HellKnight"
+{
+	//$Category c_Line2LineFOG-Monsters
+	//$Colour 13
+	EdNum 6000
+	infightinggroup 2
+		states
+	{
+		see:
+			BOS2 A 0
+			goto see_flagTest
+		
+		see_flagTest:
+			BOS2 A 0 A_JumpIfFlagsSet(see_Original, RIP, 0)
+			BOS2 A 0 A_JumpIfTargetInSight(see_playerLOS, 0.0)
+			goto see_testingFlagLoop
+			
+		see_playerLOS:
+			BOS2 A 0 A_AddFlags(RIP, 0)
+			BOS2 A 0 {A_SpawnObject(TeleportFog, 0.0, 26.0, 0.0, 0.0, 0.0, 0.0, 0.0)
+				      A_PlaySound("TELEPT", 1)
+				     }						 
+			goto see_testingFlagLoop
+
+		see_testingFlagLoop:
+			BOS2 A 3 A_Chase
+			goto see_flagTest
+			
+		see_Original:
+			BOS2 AABBCCDD 3 A_Chase
+			loop
+		
+		missile:
+			BOS2 EF 8 A_FaceTarget
+			BOS2 G 8 A_BruisAttack
+			goto see_Original
+		
+		pain:
+			BOS2 H 2
+			BOS2 H 2 A_Pain
+			goto see_Original
+		
+		raise:
+			BOS2 ONMLKJI 8
+			goto see_Original
+	}
+}
+
+
+
+
