@@ -1,0 +1,183 @@
+/*****************************************************************************
+ * DECOHack Patch File
+ ****************************************************************************/
+
+#include <dsdhacked>
+#include <friendly>
+
+// Legacy of Rust Sate and Thing Protection
+set state free safety on
+state protect 1100 to 1566
+each thing from 151 to 209 {}
+
+// Removes number conversion warnings when compiling
+set suppress warning "conversion" on
+
+// Your DECOHack code here ...
+//#include "strings.dh"
+
+/******************************
+*** Load New Monsters ***
+*******************************/
+// Skulltag Belphegor Renewal
+//Definitions : Ultimate Doom Builder
+#define Belphegor_EDMUM 6000
+#define Belphegor_Category c_Monsters
+#define Belphegor_Colour 13
+
+//Definitions : Belphegor
+#define Belphegor_Sound_seesound brsee
+#define Belphegor_Sound_painsound brpain
+#define Belphegor_Sound_deathsound brdeth
+#define Belphegor_Sound_activesound bractv
+#define Belphegor_Sound_hoof1 BRHOF1
+
+// Pre-assign things
+auto thing BelphegorTracerSmoke {}
+auto thing BelphegorBall {}
+auto thing BelphegorStep {}
+
+// Actual Monster Itself : Belphegor
+auto thing Belphegor "Belphegor"
+{
+	//$Category Belphegor_Category
+	//$Colour Belphegor_Colour
+	EdNum 	Belphegor_EDMUM
+	
+	health		2000
+	speed		12
+	radius		35	
+	height		100
+	damage		0
+	reactiontime	8
+	painchance	15
+	mass		1000
+
+	seesound	Belphegor_Sound_seesound //"brssit"
+	painsound	Belphegor_Sound_painsound //"dmpain"
+	deathsound	Belphegor_Sound_deathsound //"brsdth"
+	activesound	Belphegor_Sound_activesound //"dmact"
+
+	clear flags
+	+SOLID
+	+SHOOTABLE
+	+COUNTKILL
+
+	states
+	{
+		spawn:
+			SBR_ AB 10 A_Look
+			loop
+		see:
+			SBR_ AA 3 {A_Chase A_Spawn(BelphegorStep)}
+			SBR_ BB 3 A_Chase
+			SBR_ CC 3 {A_Chase A_Spawn(BelphegorStep)}
+			SBR_ DD 3 A_Chase
+			loop
+
+		melee:
+		missile:
+			SBR_ EF 8 A_FaceTarget
+			SBR_ G 4 {A_FaceTarget A_MonsterProjectile(BelphegorBall, 2, 0, 16, 20) }
+			SBR_ EF 6 A_FaceTarget
+			SBR_ G 4 { A_FaceTarget A_MonsterProjectile(BelphegorBall, 0, 0, 16, 20) }
+			SBR_ EF 6 A_FaceTarget
+			SBR_ G 4 { A_FaceTarget A_MonsterProjectile(BelphegorBall, 1, 0, 16, 20) }
+			goto see
+
+		pain:
+			SBR_ H 18 A_Pain
+			goto see
+
+		death:
+			SBR_ I 8
+			SBR_ J 8 A_Scream
+			SBR_ K 8
+			SBR_ L 8 A_Fall
+			SBR_ M 8
+			SBR_ N -1 A_BossDeath
+			stop
+
+		raise:
+			SBR_ NMLKJI 8
+			goto see
+	}
+}
+
+thing BelphegorBall
+{
+	health		1000
+	speed		20
+	radius		11
+	height		8
+	damage		14
+	reactiontime	8
+	painchance	0
+	mass		100
+
+	seesound	"firsht"
+	deathsound	"barexp"
+
+	clear flags
+	+NOBLOCKMAP
+	+MISSILE
+	+DROPOFF
+	+NOGRAVITY
+
+	states
+	{
+		spawn:
+			BRBL AB 2 bright {A_SeekTracer(3, 2) A_Spawn(BelphegorTracerSmoke)}
+			loop
+		death:
+			BRBL C 8 bright
+			BRBL D 6 bright
+			BRBL E 4 bright A_RadiusDamage(64, 128)
+			stop
+		raise:
+			TROO A -1
+			stop
+	}
+}
+
+thing BelphegorTracerSmoke
+{
+	health		1000
+	speed		0
+	radius		20
+	height		16
+	damage		0
+	reactiontime	8
+	painchance	0
+	mass		100
+
+	clear flags
+	+NOBLOCKMAP
+	+NOGRAVITY
+
+	states
+	{
+		spawn:
+			BFPF BCBCD 4
+			stop
+		raise:
+			TROO A -1
+			stop
+	}
+}
+
+thing BelphegorStep {
+	+NOBLOCKMAP
+	+NOCLIP
+	States
+	{
+		Spawn:
+			TNT1 A 1
+			TNT1 A 1 A_PlaySound(Belphegor_Sound_hoof1, 0)
+			TNT1 A 20
+			Stop
+	}
+}
+
+
+
